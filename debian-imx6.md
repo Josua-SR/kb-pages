@@ -114,13 +114,94 @@ All of our packages can be built by invoking dpkg-buildpackage directly, or thro
 
 Also note that [our instance](https://obs.solid-build.xyz/) of the [OpenBuildService](https://openbuildservice.org/) which we use to automate builds is available to the public on request.
 
-## Use upstream Debian
+## Pure Debian (upstream)
 
 Our long-term goal is enabling as much of our hardware upstream as part of Debian where feasible. Success is highly dependent on the efforts of the general community around the i.MX6 SoCs, as well as the amount of proprietary blobs involved. At this point upstream support for the i.MX6 is pretty good, and there is ongoing work on a free graphics stack for the Vivante GPU. However the performance of video de- and encoding as well as OpenGL rendering is nowhere near to the proprietary solutions currently used.
 
-Please refer to the instructions on our [Debian for A38x page](https://developer.solid-run.com/knowledge-base/a388-debian/#upstream-buster) which aside from the part about U-Boot are fully applicable to all of our i.MX6 based boards!
+The instructions below are a subset of [chapter 4](https://www.debian.org/releases/stable/armhf/ch04.en.html) from the [Debian GNU/Linux Installation Guide](https://www.debian.org/releases/stable/armhf/).
+
+1. Create bootable installer
+   - network install
+
+         wget http://deb.debian.org/debian/dists/buster/main/installer-armhf/current/images/netboot/SD-card-images/firmware.MX6_Cubox-i.img.gz
+         wget http://deb.debian.org/debian/dists/buster/main/installer-armhf/current/images/netboot/SD-card-images/partition.img.gz
+         zcat firmware.MX6_Cubox-i.img.gz partition.img.gz > installer.img
+
+   - offline install
+
+         wget http://deb.debian.org/debian/dists/buster/main/installer-armhf/current/images/hd-media/SD-card-images/firmware.MX6_Cubox-i.img.gz
+         wget http://deb.debian.org/debian/dists/buster/main/installer-armhf/current/images/hd-media/SD-card-images/partition.img.gz
+         zcat firmware.MX6_Cubox-i.img.gz partition.img.gz > installer.img
+
+2. Write installer image block device
+
+   We recommend using [etcher.io](https://www.balena.io/etcher/) for writing the `installer.img` file created in the previous step to a microSD or USB drive.
+
+   Note: When choosing USB, a version of U-Boot must be already installed on the device.
+
+3. Write Debian Installation ISO to a **different** USB drive (for offline installation)
+
+   Download [debian-10.0.0-armhf-xfce-CD-1.iso](https://cdimage.debian.org/debian-cd/current/armhf/iso-cd/debian-10.0.0-armhf-xfce-CD-1.iso) and place it as a file on a USB drive formatted with a filesystem supported by Debian, such as ext4.
+
+4. Perform Installation
+
+   - Attach the bootable installer media from step 2 to the device
+   - Optional: Attach the drive created in step 3 to the device
+   - connect to the serial console
+   - power on and walk through the installation prompts
+
+   Note: It is safe to overwrite the bootable installer media from step 2 during the installation.
+
+5. Post-Installation Tweaks
+
+   - (Re-) Install U-Boot if necessary
+
+     If the boot media has been used as install target, U-Boot has to be reinstalled as documented on our [U-Boot page](https://developer.solid-run.com/knowledge-base/i-mx6-u-boot/). Both the [SolidRun U-Boot builds](https://images.solid-build.xyz/IMX6/U-Boot/) and [those from Debian](http://debian.backend.mirrors.debian.org/debian/dists/buster/main/installer-armhf/current/images/u-boot/MX6_Cubox-i/) are usable.
+
+   - Enable Non-Free packages
+
+     A number of components require proprietary firmware to operate. Please refer to the [Debian Wiki](https://wiki.debian.org/SourcesList) for enabling the `non-free` component.
+
+   - Broadcom WiFi:
+     1. Install firmware package: `apt install firmware-brcm80211`
+
+        Note: The firmware for BCM4330 is actually outdated and has poor performance. We advise directly grabbing `brcmfmac4330-sdio.bin` from [our github](https://github.com/SolidRun/deb-pkg_cuboxi-firmware-wireless) and installing it to `/ib/firmware/brcm/` instead.
+
+     2. Install chip configuration:
+
+            wget https://github.com/SolidRun/deb-pkg_cuboxi-firmware-wireless/raw/master/brcmfmac4329-sdio.txt
+            wget https://github.com/SolidRun/deb-pkg_cuboxi-firmware-wireless/raw/master/brcmfmac4330-sdio.txt
+            install -v -m755 -o root -g root brcmfmac4329-sdio.txt brcmfmac4330-sdio.txt /lib/firmware/brcm/
+
+   - Ti WiFi (i.MX6 SoM v1.5 and later):
+
+     1. Install firmware package: `apt install firmware-ti-connectivity`
+
+     2. Install chip configuration
+
+            wget https://github.com/SolidRun/deb-pkg_cuboxi-firmware-wireless/raw/master/wl18xx-conf.bin
+            install -v -m755 -o root -g root wl18xx-conf.bin /lib/firmware/ti-connectivity/
+
+   - Analogue Audio (sgtl5k)
+
+     1. Install firmware package:  `apt install firmware-misc-nonfree`
+
+     2. Install an initramfs-tools hook for including sdma firmware in initramfs:
+
+            wget https://github.com/SolidRun/pkg-bsp/raw/master/initramfs-tools/imx-sdma.sh
+            install -m755 -o root -g root imx-sdma.sh /etc/initramfs-tools/hooks/imx-sdma
+            update-initramfs -u
 
 ## Known Issues
+
+### wl1271_sdio mmc0:0001:2: wl12xx_sdio_power_on: failed to get_sync(-13)
+
+The Ti WiFi on SoMs v 1.5 does not currently work with the 4.19 kernel in Debian.
+Investigation pending...
+
+### Debian Installer does not drive the display
+
+As of Debian Buster, the debian-installer does not include the kernel modules necessary for driving the HDMI port. Therefore the serial console has to be used to perform the installation.
 
 ### apt upgrade – The following packages have been kept back
 
