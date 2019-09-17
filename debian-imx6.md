@@ -12,7 +12,7 @@ Debian focuses on stability and security of its releases. As a result, new featu
 
 | Release | Support | Window-Systems for Multimedia | Accelerated Desktops |
 | --- | --- | --- |
-| Buster | No | - | - |
+| Buster | Yes | - | - |
 | Stretch | Yes | Framebuffer, Wayland | Weston |
 | Jessie | Yes | Framebuffer, X11 | Mate |
 | Wheezy | Expired | Framebuffer, X11 | XFCE |
@@ -34,11 +34,11 @@ If you have the optional eMMC on your SOM use these instructions to install Debi
 
 3. Download the Debian image:
 
-       wget https://images.solid-build.xyz/IMX6/Debian/sr-imx6-debian-stretch-cli-20180203.img.xz
+       wget https://images.solid-build.xyz/IMX6/Debian/sr-imx6-debian-buster-cli-20190906.img.xz
 
 4. As root write the image to the eMMC:
 
-       xz -dc sr-imx6-debian-stretch-cli-20180203.img.xz | dd of=/dev/mmcblk2 bs=4M conv=fsync
+       xz -dc sr-imx6-debian-buster-cli-20190906.img.xz | dd of=/dev/mmcblk2 bs=4M conv=fsync
 
 5. Download bootloader images:
 
@@ -62,9 +62,45 @@ If you have the optional eMMC on your SOM use these instructions to install Debi
 
 Once you are greeted by a login prompt, the default username and password are both "debian". For security reasons there is **no** root password! If you really need one, you can run `sudo passwd root` to set your own.
 
-### Get Connected
+### Networking
 
 Connman comes preinstalled on all images to facilitate easier network management, especially for wifi and tethering. Please refer to the [documentation](https://01.org/connman/documentation) for more information.
+
+### Accelerated OpenGL-ES
+
+The drivers for the Vivante GPU that is part of i.MX6 SoCs are available as packages from our repository to be installed with apt. There are variants for Framebuffer, Wayland and X11:
+
+- Framebuffer:
+  - runtime: `imx-gpu-viv imx-gpu-viv-fb`
+  - development: `imx-gpu-viv-dev imx-gpu-viv-fb-dev`
+- Wayland (TBD)
+- X11 (TBD)
+
+When all variants are installed side by side, the default is selected through `update-alternatives` by configuring the `vivante-gal` link group:
+
+    sudo update-alternatives --config vivante-gal
+
+#### Demos
+- eglinfo
+
+  A small application for printing version and feature information of the active EGL and OpenGl-ES implementation. It is available [here on github](https://github.com/dv1/eglinfo) and installable through apt from our bsp repository:
+
+      apt install eglinfo-fb
+      # or any of eglinfo-wl eglinfo-x11
+
+- glmark2
+
+  Benchmark for OpenGL-ES 2.0 - available [here on github](https://github.com/glmark2/glmark2).
+  Instructions for building and running from source:
+
+      sudo apt install build-essential git imx-gpu-viv-fb-dev imx-gpu-viv-dev libjpeg-dev libpng-dev pkg-config python
+      git clone -b fbdev https://github.com/Josua-SR/glmark2.git
+      cd glmark2
+      ./waf configure --with-flavors=fbdev-glesv2
+      ./waf build -j4
+      sudo ./waf install
+
+      glmark2-es2-fbdev
 
 ## Customize
 
