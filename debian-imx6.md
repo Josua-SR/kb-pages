@@ -102,6 +102,47 @@ When all variants are installed side by side, the default is selected through `u
 
       glmark2-es2-fbdev
 
+### Accelerated Video Decoding and Playback
+
+While directly using the VPU and IPU libraries provided by NXP is possible, that use-case goes beyond the scope of this document.
+Instead we are using the [GStreamer 1.0 plugins for i.MX platforms](https://github.com/Freescale/gstreamer-imx) to make use of those acceleration blocks in the SoC.
+
+There are variants for Framebuffer, Wayland and X11:
+- `gstreamer1.0-imx-fb`
+- `gstreamer1.0-imx-wl`
+- `gstreamer1.0-imx-x11`
+
+Alike the GPU userspace, when more than one variant is installed at a time, the desired graphics system can be chosen through `update-alternatives`:
+
+    update-alternatives --config gst1.0-imx
+
+#### Examples
+
+The examples below depend on a number of additional gstreamer elements and utilities:
+
+    sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-alsa gstreamer1.0-tools
+    sudo apt install gstreamer1.0-imx-fb
+
+And the [Project Peach](https://peach.blender.org/) [big buck bunny 1080p 30Hz](http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4) as demo.
+
+- automatic with playbin element
+
+      gst-launch-1.0 playbin uri=http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4
+
+- explicit vpu + g2d - video only
+
+      gst-launch-1.0 \
+        filesrc location=bbb_sunflower_1080p_30fps_normal.mp4 ! \
+        qtdemux ! h264parse ! imxvpudec ! \
+        imxg2dvideosink
+
+- explicit a52dec + alsa + sgtl5k (3.5mm audio jack) - audio only
+
+      gst-launch-1.0 \
+        filesrc location=bbb_sunflower_1080p_30fps_normal.mp4 ! \
+        qtdemux ! ac3parse ! a52dec ! \
+        alsasink device=default:CARD=Codec
+
 ## Customize
 
 ### Using custom Device-Tree Blobs
