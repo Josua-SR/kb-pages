@@ -8,6 +8,7 @@ As a proof of concept and for prototyping purposes we provide the option to run 
 ## Reference Images
 Readily usable images of Debian Buster are available at [images.solid-build.xyz](https://images.solid-build.xyz/8040/).
 They are intended to be used with a microSD card and ship with a suitable build of U-Boot already included.
+**Default username and password are `debian` and `debian`** - with sudo privileges.
 
 Using a tool of choice our images can be decompressed and written to a microSD card. We suggest [etcher.io](https://www.balena.io/etcher/) which takes care of the decompression by itself.
 Alternatively an image can be written to an arbitrary drive on a Unix system:
