@@ -12,7 +12,7 @@ Debian focuses on stability and security of its releases. As a result, new featu
 
 | Release | Support | Window-Systems for Multimedia | Accelerated Desktops |
 | --- | --- | --- |
-| Buster | Yes | - | - |
+| Buster | Yes | Framebuffer, X11 | Mate |
 | Stretch | Yes | Framebuffer, Wayland | Weston |
 | Jessie | Yes | Framebuffer, X11 | Mate |
 | Wheezy | Expired | Framebuffer, X11 | XFCE |
@@ -74,7 +74,10 @@ The drivers for the Vivante GPU that is part of i.MX6 SoCs are available as pack
   - runtime: `imx-gpu-viv imx-gpu-viv-fb`
   - development: `imx-gpu-viv-dev imx-gpu-viv-fb-dev`
 - Wayland (TBD)
-- X11 (TBD)
+- X11
+  - driver: `xserver-xorg-video-imx-viv`
+  - runtime: `imx-gpu-viv imx-gpu-viv-x11`
+  - development: `imx-gpu-viv-dev imx-gpu-viv-x11-dev`
 
 When all variants are installed side by side, the default is selected through `update-alternatives` by configuring the `vivante-gal` link group:
 
@@ -128,6 +131,10 @@ And the [Project Peach](https://peach.blender.org/) [big buck bunny 1080p 30Hz](
 - automatic with playbin element
 
       gst-launch-1.0 playbin uri=http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4
+
+- automatic with playbin (720p)
+
+      gst-launch-1.0 playbin uri=http://distribution.bbb3d.renderfarming.net/video/mp4/big_buck_bunny_720p_surround.avi
 
 - explicit vpu + g2d - video only
 
