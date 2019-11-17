@@ -11,7 +11,7 @@ Debian focuses on stability and security of its releases. As a result, new featu
 ### Support Matrix
 
 | Release | Support | Window-Systems for Multimedia | Accelerated Desktops |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | Buster | Yes | Framebuffer, X11 | Mate |
 | Stretch | Yes | Framebuffer, Wayland | Weston |
 | Jessie | Yes | Framebuffer, X11 | Mate |
