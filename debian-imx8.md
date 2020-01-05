@@ -34,7 +34,15 @@ Several tools are available for writing them to block storage, including etcher.
 
 ### Install to eMMC
 
-TBD.
+The eMMC is accessible from the running system as `/dev/mmcblk0`. Install the
+Debian software image to eMMC by writing the image directly to `/dev/mmcblk0`:
+
+	xzcat sr-imx8-debian-buster-20191120-cli-imx8mq-sdhc.img.xz | dd of=/dev/mmcblk0 bs=4k conv=fdatasync
+
+Set SW3 DIP switches to boot from eMMC as documented in the [HummingBoard
+Pulse Boot
+Select](https://developer.solid-run.com/knowledge-base/hummingboard-pulse-boot-select/)
+article.
 
 ### Get Started
 
