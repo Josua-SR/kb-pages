@@ -200,28 +200,44 @@ Installation instructions follow.
    - For Clearfog Base set to 01001
 9. Plug the USB storage device into the Clearfog
 10. Run the following command on the x86 PC:
+
         ./kwboot -t -b u-boot-clearfog-base-uart.kwb /dev/ttyUSB0
+
 11. Power up the Clearfog
 12. Wait a few minutes of the U-Boot image to download
 13. Hit a key to stop autoboot
 14. Configure the eMMC to boot from hardware boot partition:
+
         mmc partconf 0 1 1 0
+
 15. Reset the RTC block
+
         date reset
+
 16. Boot initial installation Linux image
+
         boot
-17. Type **root** at the **buildroot login:** prompt
+
+17. Type `root` at the `buildroot login:` prompt
 18. Mount the USB storage device
+
         mount /dev/sda1 /mnt
+
 19. Install the bootloader
+
         echo 0 > /sys/block/mmcblk0boot0/force_ro
         dd if=/mnt/u-boot-clearfog-base-mmc.kwb of=/dev/mmcblk0boot0
+
 20. Install the Debian filesystem
+
         xzcat /mnt/sr-a38x-debian-stretch-20180406.img.xz \
           | dd of=/dev/mmcblk0 bs=1M conv=fsync
+
 21. Unmount the USB storage device
+
         umount /mnt
+
 22. Power off the Clearfog
 23. Set the DIP switches back to boot from SD/eMMC: 00111
 24. Power on the Clearfog
-25. Debian should boot to the *login:* prompt
+25. Debian should boot to the `login:` prompt
