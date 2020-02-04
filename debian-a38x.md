@@ -257,3 +257,96 @@ Installation instructions follow.
 23. Set the DIP switches back to boot from SD/eMMC: 00111
 24. Power on the Clearfog
 25. Debian should boot to the `login:` prompt
+
+## Clearfog GTR Software Installation
+
+This section describes a procedure for installing the SolidRun provided Debian
+image on the Clearfog GTR eMMC storage. You will need the following items:
+
+- USB storage device (Disk-on-Key), FAT formatted
+
+- x86 PC (64-bit) running any flavor of Linux
+
+Installation instructions follow.
+
+1. Download an installation images and utilities archive from
+   [here](https://developer.solid-run.com/wp-content/uploads/2020/01/clearfog-gtr-emmc.tar.gz)
+
+2. Connect your x86 PC host to the ClearFog GTR UART console on the micro-USB
+
+3. Copy the following files from the archive to the x86 PC:
+
+   - kwboot
+   - u-boot-spl.kwb
+
+4. Copy the following files from the archive to the USB storage device:
+
+   - u-boot-spl.kwb
+   - zImage
+   - armada-385-clearfog-gtr-l8.dtb
+
+5. Create a directory named extlinux in the USB storage device
+
+6. Copy the file extlinux.conf from the archive into the extlinux directory
+
+7. Copy the latest Debian image (`.img.*z` suffix) from
+   [here](https://images.solid-build.xyz/A38X/Debian/) to the USB storage
+   device
+
+8. Set the Clearfog GTR boot select DIP switches to eMMC boot: 00111
+
+9. Plug the USB storage device into the Clearfog
+
+10. Run the following command on the x86 PC:
+
+```
+    ./kwboot -t -b u-boot-spl.kwb /dev/ttyUSB0
+```
+
+11. Power up the Clearfog GTR
+
+12. Wait a few minutes of the U-Boot image to download
+
+13. Hit a key to stop autoboot
+
+14. Configure the eMMC to boot from hardware boot partition:
+
+```
+    mmc partconf 0 1 1 0
+```
+
+15. Boot initial installation Linux image:
+
+```
+    boot
+```
+
+16. Mount the USB storage device:
+
+```
+    mount /dev/sda1 /mnt
+```
+
+17. Install the bootloader:
+
+```
+    echo 0 > /sys/block/mmcblk0boot0/force_ro
+    dd if=/mnt/u-boot-spl.kwb of=/dev/mmcblk0boot0
+```
+
+18. Install the Debian filesystem:
+
+```
+    xzcat /mnt/sr-a38x-debian-buster-20200114.img.xz \
+      | dd of=/dev/mmcblk0 bs=1M conv=fsync
+```
+
+19. Unmount the USB storage device:
+
+```
+    umount /mnt
+```
+
+20. Reset or power cycle the Clearfog GTR
+
+21. Debian should boot to the `login:` prompt
