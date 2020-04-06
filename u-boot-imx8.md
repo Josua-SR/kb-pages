@@ -41,13 +41,16 @@ Extract the NXP firmware archive and accept the end user agreement
     chmod +x firmware-imx-7.9.bin
     ./firmware-imx-7.9.bin
     cp firmware-imx-7.9/firmware/hdmi/cadence/signed_hdmi_imx8m.bin u-boot/
-    cp firmware-imx-7.9/firmware-imx-7.9/firmware/ddr/synopsys/lpddr4*.bin u-boot/
+    cp firmware-imx-7.9/firmware/ddr/synopsys/lpddr4*.bin u-boot/
 
 ### U-Boot
 
 Build U-Boot and generate the image - *make sure you have set your ARCH and CROSS_COMPILE environment variables as noted above*
 
 ## Deploying U-Boot
+
+    make imx8mq_hb_defconfig
+    make flash.bin
 
 ### to microSD
 
@@ -88,7 +91,16 @@ Build U-Boot and generate the image - *make sure you have set your ARCH and CROS
 
 ### to SPI Flash
 
-TBD.
+- from U-Boot Shell:
+
+       # load u-boot binary to memory
+       load mmc 1:1 ${kernel_addr_r} flash.bin
+
+       # erase flash (optional)
+       # sf erase 0 0x1000000
+
+       # write u-boot binary to flash
+       sf write ${kernel_addr_r} 0 $filesize
 
 ## Configure Boot Sequence (DIPs S1+SW3)
 
