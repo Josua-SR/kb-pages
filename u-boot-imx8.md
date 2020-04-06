@@ -53,6 +53,26 @@ Build U-Boot and generate the image - *make sure you have set your ARCH and CROS
 
     sudo dd if=flash.bin of=/dev/sd[x] bs=1024 seek=33
 
+## Configure Boot Sequence (DIPs S1+SW3)
+
+On HummingBoard Pulse the Boot Sequence can be configured through the DIP switches S1 and SW3. In this section, **1** refers to the "*ON*" position as printed on the switch. Order is from left to right, e.g. 10 means switch 1 set to 1, and switch 2 set to 0.
+
+### Boot Mode
+
+The i.MX8M SoCs support the following 3 boot modes configurable through the S1 DIP switches on HummingBoard Pulse
+
+- **00**: Use eFuse settings, fall-back to Serial Download on error.
+- **01**: Serial Download
+- **10**: Use eFuse settings, but override with GPIOs (DIP SW3); Can be disabled by blowing BT_FUSE_SEL.
+
+### Boot Source
+
+When boot mode is **10**, the DIP switches SW3 can be used for selecting the actual boot device:
+
+- **1100**: microSD (mmc2)
+- **0010**: eMMC (mmc1)
+- **0001**: SPI Flash
+
 ## Linux Kernel
 
 Kernel sources are found on SolidRun’s github site – https://github.com/SolidRun/linux-fslc.git
