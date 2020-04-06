@@ -51,7 +51,44 @@ Build U-Boot and generate the image - *make sure you have set your ARCH and CROS
 
 ### to microSD
 
-    sudo dd if=flash.bin of=/dev/sd[x] bs=1024 seek=33
+- from (any) Linux Device
+
+       sudo dd if=flash.bin of=/dev/sd[x] bs=1024 seek=33
+
+### to eMMC
+
+- from Linux:
+
+       # Data Partition
+       sudo dd if=flash.bin of=/dev/mmcblk0 bs=1024 seek=33
+
+       # Boot0
+       echo 0 | sudo tee /sys/block/mmcblk0boot0/force_ro
+       sudo dd if=flash.bin of=/dev/mmcblk0boot0 bs=1024 seek=33
+
+       # Boot1
+       echo 0 | sudo tee /sys/block/mmcblk0boot1/force_ro
+       sudo dd if=flash.bin of=/dev/mmcblk0boot1
+
+- from U-Boot Shell:
+
+   This procedure assumes familiarity with the U-Boot Commandline, especially knowledge of filesystem or network access for loading files to memory. For casual users, installing u-boot from within Linux is recommended!
+
+       # load u-boot binary to memory
+       load mmc 1:1 ${kernel_addr_r} flash.bin
+       # calculate u-boot binary size as number of 512-byte blocks (e.g. 1001332 bytes --> #blocks=ceil(1001332/512)=0x7ae)
+
+       # select eMMC, data partition
+       mmc dev 0
+       # boot0: mmc dev 0 1
+       # boot1: mmc dev 0 2
+
+       # write u-boot binary to eMMC at 33k bytes (66x512 blocks) offset
+       mmc write ${kernel_addr_r} 0x42 0x7ae
+
+### to SPI Flash
+
+TBD.
 
 ## Configure Boot Sequence (DIPs S1+SW3)
 
@@ -72,6 +109,34 @@ When boot mode is **10**, the DIP switches SW3 can be used for selecting the act
 - **1100**: microSD (mmc2)
 - **0010**: eMMC (mmc1)
 - **0001**: SPI Flash
+
+#### Configure eMMC Boot Partition
+
+From the U-Boot Shell, the eMMC boot partition is configurabkle with the **mmc partconf** command. It takes either 1, or 4 paramaters:
+
+    # print configuration of mmc 0
+    mmc partconf 0
+    BOOT_ACK: 0x0
+    BOOT_PARTITION_ACCESS: 0x0
+    PARTITION_ACCESS: 0x0
+
+The most relevant piece here is the **BOOT_PARTITION_ACCESS** field. It takes one of the following values:
+
+- **0**: do not boot from eMMC
+- **1**: boot from boot0
+- **2**: boot from boot1
+- **7**: boot from data partition
+
+PARTITION_ACCESS is supposed to control access to the boot partitions where 0 means no access, 1 means read-write for boot0 and 2 read-write for boot1. However this currently does not appear to have any effect. It is suggested to set this to 1 when booting from boot0, 2 when booting from boot1 and 0 when booting from the data partition.
+
+So finally this is how a new configuration is applied:
+
+    # configure mmc 0 to boot from, and enable access to, boot0
+    mmc partconf 0 1 1 1
+    # configure mmc 0 to boot from, and enable access to, boot1
+    mmc partconf 0 1 2 2
+    # configure mmc 0 to boot from the data partition, and disable access to boot partitions
+    mmc partconf 0 1 7 0
 
 ## Linux Kernel
 
