@@ -12,7 +12,7 @@ Debian focuses on stability and security of its releases. As a result, new featu
 
 | Release | Support | OpenGL-ES | Accelerated Video Coding | Desktop |
 | --- | --- | --- | --- | --- |
-| Bullseye (testing) | Yes | Framebuffer, Wayland, X11 (TBD) | Framebuffer | Weston |
+| Bullseye (testing) | Yes | Framebuffer, Wayland, | Framebuffer | Weston |
 | Buster | Yes | - | - | - |
 | Stretch | Yes | - | - | - |
 
@@ -207,10 +207,12 @@ The examples below depend on a number of additional gstreamer elements and utili
 - automatic with playbin (720p)
 
        gst-launch-1.0 playbin3 uri=http://distribution.bbb3d.renderfarming.net/video/mp4/big_buck_bunny_720p_surround.avi
+       # for wayland, append video-sink=waylandsink
 
 - automatic with playbin (1080p)
 
        gst-launch-1.0 playbin3 uri=http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_30fps_normal.mp4
+       # for wayland, append video-sink=waylandsink
 
 ### Wayland
 
@@ -224,9 +226,13 @@ Then, to start - use weston-launch on a terminal session (**not ssh or uart!**)
 
     weston-launch
 
-### Installing X11
+### XWayland
 
-*TBD*
+TBD.
+
+### X11
+
+Abandoned. NXP does not officially support using Xorg on the i.MX8M SoCs - causing a gap in functional xorg drivers required for DRI and GLX.
 
 ## Customize
 
