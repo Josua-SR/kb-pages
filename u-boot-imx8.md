@@ -114,7 +114,7 @@ The i.MX8M SoCs support the following 3 boot modes configurable through the S1 D
 - **01**: Serial Download
 - **10**: Use eFuse settings, but override with GPIOs (DIP SW3); Can be disabled by blowing BT_FUSE_SEL.
 
-### Boot Source
+### Boot Source (i.MX8MQ Hummingboard Pulse)
 
 When boot mode is **10**, the DIP switches SW3 can be used for selecting the actual boot device:
 
@@ -122,7 +122,16 @@ When boot mode is **10**, the DIP switches SW3 can be used for selecting the act
 - **0010**: eMMC (mmc1)
 - **0001**: SPI Flash
 
+### Boot Source (i.MX8MM Hummingboard Ripple)
+
+When boot mode is **10**, the DIP switches SW3 can be used for selecting the actual boot device:
+
+- **1100**: microSD (mmc2)
+- **0011**: eMMC (mmc3)
+
 #### Configure eMMC Boot Partition
+
+> :warning: i.MX8M Mini has the u-boot indices for sdhc and emmc swapped: `mmc 1` is eMMC there!
 
 From the U-Boot Shell, the eMMC boot partition is configurabkle with the **mmc partconf** command. It takes either 1, or 4 paramaters:
 
