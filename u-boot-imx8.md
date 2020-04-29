@@ -131,7 +131,9 @@ When boot mode is **10**, the DIP switches SW3 can be used for selecting the act
 
 #### Configure eMMC Boot Partition
 
-> :warning: i.MX8M Mini has the u-boot indices for sdhc and emmc swapped: `mmc 1` is eMMC there!
+| **Note:** i.MX8M Mini has the u-boot indices for sdhc and emmc swapped: `mmc 1` is eMMC there! |
+| --- |
+
 
 From the U-Boot Shell, the eMMC boot partition is configurabkle with the **mmc partconf** command. It takes either 1, or 4 paramaters:
 
