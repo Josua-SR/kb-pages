@@ -1,7 +1,9 @@
 
 ## Build Firmware from Source
 
-We provide a general tool for building U-Boot, UEFI and operating system block images [here on GitHub](https://github.com/SolidRun/lx2160a_build/tree/LSDK-19.09-sr-uefi). For detailed usage please consult its README. **Currently recommend are branch LSDK-19.09-sr for U-Boot, and branch LSDK-19.09-sr-uefi for UEFI!**
+We provide a general tool for building U-Boot and operating system block images [here on GitHub](https://github.com/SolidRun/lx2160a_build). For detailed usage please consult its README. **Currently recommend is the master branch!**
+
+UEFI is a Work in Progress and will be documented eventually :(
 
 ## Binaries
 
