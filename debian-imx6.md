@@ -223,9 +223,9 @@ The instructions below are a subset of [chapter 4](https://www.debian.org/releas
 
    Note: When choosing USB, a version of U-Boot must be already installed on the device.
 
-3. Write Debian Installation ISO to a **different** USB drive (for offline installation)
+3. Write Debian Installation ISO to a **different** USB drive (for offline installation only)
 
-   Download [debian-10.0.0-armhf-xfce-CD-1.iso](https://cdimage.debian.org/debian-cd/current/armhf/iso-cd/debian-10.0.0-armhf-xfce-CD-1.iso) and place it as a file on a USB drive formatted with a filesystem supported by Debian, such as ext4.
+   Download [debian-10.5.0-armhf-xfce-CD-1.iso](https://cdimage.debian.org/debian-cd/current/armhf/iso-cd/debian-10.5.0-armhf-xfce-CD-1.iso) and place it as a file on a USB drive formatted with a filesystem supported by Debian, such as ext4.
 
 4. Perform Installation
 
@@ -249,7 +249,7 @@ The instructions below are a subset of [chapter 4](https://www.debian.org/releas
    - Broadcom WiFi:
      1. Install firmware package: `apt install firmware-brcm80211`
 
-        Note: The firmware for BCM4330 is actually outdated and has poor performance. We advise directly grabbing `brcmfmac4330-sdio.bin` from [our github](https://github.com/SolidRun/deb-pkg_cuboxi-firmware-wireless) and installing it to `/ib/firmware/brcm/` instead.
+        Note: The firmware for BCM4330 is actually outdated and has poor performance. We advise directly grabbing `brcmfmac4330-sdio.bin` from [our github](https://github.com/SolidRun/deb-pkg_cuboxi-firmware-wireless) and installing it to `/lib/firmware/brcm/` instead.
 
      2. Install chip configuration:
 
@@ -281,7 +281,7 @@ The instructions below are a subset of [chapter 4](https://www.debian.org/releas
 ### wl1271_sdio mmc0:0001:2: wl12xx_sdio_power_on: failed to get_sync(-13)
 
 The Ti WiFi on SoMs v 1.5 does not currently work with the 4.19 kernel in Debian.
-Investigation pending...
+Newer releases of Linux appear to have solved the problem - e.g. 5.7.10 is known to work - and can be installed from [buster-backports](https://backports.debian.org/Instructions/) by `apt install -t buster-backports linux-image-armmp`.
 
 ### Debian Installer does not drive the display
 
