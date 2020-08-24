@@ -32,3 +32,7 @@ People keep underestimating this step, but it does install a newer kernel build 
 
     docker info
     docker run hello-world
+
+## References
+
+- [docker.com: Install Docker Engine on Debian](https://docs.docker.com/engine/install/debian/)
