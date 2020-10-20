@@ -85,43 +85,6 @@ Now is the time to override the name of device-tree for Cubox Pulse:
 This setting is permanent as long as the boot sectors of this particular microSD aren’t overridden, e.g. by writing a new image to it.
 Reboot the device by unplugging power, and let it boot up into Debian.
 
-### Accelerated OpenGL-ES - Kernel-Space
-
-**Note: Currently requires a the NXP BSP Release 1.1.0 - which hasn't received security updates in over a year and should nto be used in production! Once a better kernel is available, it will be made available through apt and this section removed.**
-
-    # if cross-compiling, get cross-compiler
-    apt-get install build-essential-arm64
-
-    # get source code
-    git clone https://github.com/Josua-SR/linux.git
-    cd linux; git checkout -b rel_imx_4.19.35_1.1.0+josua origin/rel_imx_4.19.35_1.1.0+josua
-
-    # configure
-    wget -O .config https://gist.github.com/Josua-SR/66c7aaa64221ef16b94fe8aabc61ab77/raw/abd492bac4461e66d98ef920d5faa496d43a2a5a/nxp-4.19-1.1.0-solidrun-config
-    # optionally customize
-    make ARCH=arm64 menuconfig
-
-    # compile
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j4 dtbs Image modules
-
-    # collect binaries
-    RELEASE=$(make kernelrelease)
-    mkdir -p O/boot O/lib/modules O/usr/lib/linux-image-$RELEASE
-    make INSTALL_MOD_PATH="$PWD/O" modules_install
-    cp -v arch/arm64/boot/Image O/boot/vmlinuz-$RELEASE
-    cp -v System.map O/boot/System.map-$RELEASE
-    cp -v .config O/boot/config-$RELEASE
-    find arch/arm64/boot/dts -name "*.dtb" -exec cp -v {} O/usr/lib/linux-image-$RELEASE/ \;
-    cd O; tar cf ../kernel-$RELEASE.tar *; cd ..
-    ls -lh kernel-$RELEASE.tar
-
-    # Unpack on target system
-    sudo tar --keep-directory-symlink -C / -xvf kernel-$RELEASE.tar
-    # make initrd
-    sudo update-initramfs -c -k $RELEASE
-    # select new kernel for future boots
-    sudo flash-kernel --force $RELEASE
-
 ### Accelerated OpenGL-ES - User-Space
 
 **Note: This section requires Debian Bullseye or later! On older releases, container technologies such as docker can be used to avoid a distribution upgrade. Please consider [this Dockerfile](https://gist.github.com/Josua-SR/5667c005ca668e0c2a442401ba49ff55) as a starting-point.**
